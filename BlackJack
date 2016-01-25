@@ -1,0 +1,164 @@
+public class Karte {
+
+	private int farbe;
+	private int nummer;
+
+	public String getFarben()
+	{		
+		if(farbe == 0){
+			return "Kreuz";
+		}
+		if(farbe == 1){
+			return "Karo";
+		}
+		if(farbe == 2){
+			return "Herz";
+		}
+		if(farbe == 3){
+			return "Pik";
+		}
+		return null;
+	}
+
+	public int getFarbe() 
+	{
+		return farbe;
+	}
+
+	public void setFarbe(int color) 
+	{
+		this.farbe = color;
+	}
+
+	public int getNummer() 
+	{
+		return nummer;
+	}
+
+	public void setNummer(int number) 
+	{
+		this.nummer = number;
+	}
+
+	public Karte()
+	{
+		nummer = nummer % 13;
+		farbe = nummer / 13;
+	}
+
+	public String toString()
+	{
+		return "Nummer: " + this.getNummer() + " Farbe: " + this.getFarben();
+	}
+
+}
+
+public class Batch {
+	
+	int[] deck = new int[52];
+
+	public Karte[] hand()
+	{
+		Karte[] hand = new Karte[1];
+		int buffer = 0;
+		
+		 for(int i = 0; i < hand.length; i++)
+		 {
+			 java.util.Random random = new java.util.Random();
+			 int gezogeneKarte = random.nextInt(deck.length - i);
+			 
+			 hand[i] = new Karte();
+			 buffer = deck[(deck.length - 1) - i];
+			 deck[(deck.length - 1) - i] = deck[gezogeneKarte];
+			 deck[gezogeneKarte] = buffer;
+		 }
+		 
+		 return hand;
+	}
+
+	public Batch()
+	{
+		for(int i = 0; i < deck.length; i++)
+			deck[i] = i;
+	}
+
+}
+
+public class Tool {
+
+	public static boolean checkBlackJack(Karte[] hand){
+
+		for(int i = 0; i < hand.length; i++){
+			if(hand[i].getNummer() + hand[i+1].getNummer() == 21){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static int Gewinner(Karte Karte1Spieler, Karte Karte2Spieler, Karte Karte1Croupier, Karte Karte2Croupier){
+
+		int counter = 0;
+		Karte[] Spieler = null;
+		Karte[] Croupier = null;
+		Spieler[0] = Karte1Spieler;
+		Spieler[1] = Karte2Spieler;
+		Croupier[0] = Karte1Croupier;
+		Croupier[1] = Karte1Croupier;
+
+		if((checkBlackJack(Spieler) == true) && (checkBlackJack(Croupier) == false)){
+			return counter++;
+		}else if((checkBlackJack(Spieler) == false) && (checkBlackJack(Croupier) == true)){
+			return counter--;
+		}else if((checkBlackJack(Spieler) == true) && (checkBlackJack(Croupier) == true)){
+			return counter + 0;
+		}else{		
+			if((Karte1Spieler.getNummer() + Karte2Spieler.getNummer()) > (Karte1Croupier.getNummer() + Karte2Croupier.getNummer())){
+				return counter++;
+			}
+			return counter--;
+		}
+	}
+}
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class DataBase {
+
+	public static void main( String args[] )
+	{
+		Connection c;
+		Statement stmt;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:test.db");
+			c.setAutoCommit(false);
+			System.out.println("Opened database successfully");
+
+			stmt = c.createStatement();
+			String sql = "DELETE from CARD WHERE";
+			stmt.executeUpdate(sql);
+			c.commit();
+
+			ResultSet rs = stmt.executeQuery( "SELECT * FROM CARD;" );
+			while ( rs.next() ) {
+				int id = rs.getInt("id");
+				String  color = rs.getString("color");
+				System.out.println( "ID = " + id );
+				System.out.println( "COLOR = " + color );
+				System.out.println();
+			}
+			rs.close();
+			stmt.close();
+			c.close();
+		} catch ( Exception e ) {
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.exit(0);
+		}
+		System.out.println("Operation done successfully");
+	}
+
+}
