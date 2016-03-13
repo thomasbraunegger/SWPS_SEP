@@ -1,0 +1,67 @@
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    Button btnSpeichern, btnSuchen, btnLöschen;
+    TextView textV;
+    EditText eText;
+    String eingabeText;
+    String suchenText;
+    String schlüssel = "key";
+    SharedPreferences prefs;
+    SharedPreferences.Editor prefsEditor;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btnSpeichern = (Button) findViewById(R.id.buttonSpeichern);
+        btnSpeichern.setOnClickListener(this);
+        btnLöschen = (Button) findViewById(R.id.buttonLöschen);
+        btnLöschen.setOnClickListener(this);
+        btnSuchen = (Button) findViewById(R.id.buttonSuchen);
+        btnSuchen.setOnClickListener(this);
+
+        textV = (TextView) findViewById(R.id.textView);
+        eText = (EditText) findViewById(R.id.editText);
+
+        prefs = this.getSharedPreferences("prefsDatei", MODE_PRIVATE);
+        prefsEditor = prefs.edit();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.buttonLöschen: {
+
+                break;
+            }
+            case R.id.buttonSpeichern: {
+
+                if(eText.getText().length() > 0) {
+                    eingabeText = eText.getText().toString();
+                    prefsEditor.putString(schlüssel, eingabeText);
+                    prefsEditor.commit();
+
+                }else {
+                    Toast.makeText(getApplicationContext(), "Gib einen Text ein!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case R.id.buttonSuchen: {
+
+                suchenText = prefs.getString(schlüssel, "Es wurde kein Text gespeichert!");
+                textV.setText(suchenText);
+                break;
+            }
+        }
+    }
+}
